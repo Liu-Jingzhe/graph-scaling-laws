@@ -22,3 +22,13 @@ docs/
 
 # Code coverage
 *.lst
+
+
+#results
+results/
+
+#datasets
+dataset/
+
+#complie
+__pycache__/

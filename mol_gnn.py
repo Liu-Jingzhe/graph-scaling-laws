@@ -6,7 +6,7 @@ from torch_geometric.nn.inits import uniform
 
 from conv import GNN_node, GNN_node_Virtualnode
 
-class GNN(torch.nn.Module):
+class Mol_GNN(torch.nn.Module):
 
     def __init__(self, num_tasks, num_layer = 5, emb_dim = 300, 
                     gnn_type = 'gin', virtual_node = True, residual = False, drop_ratio = 0.5, JK = "last", graph_pooling = "sum"):
@@ -15,7 +15,7 @@ class GNN(torch.nn.Module):
             virtual_node (bool): whether to add virtual node or not
         '''
 
-        super(GNN, self).__init__()
+        super(Mol_GNN, self).__init__()
 
         self.num_layer = num_layer
         self.drop_ratio = drop_ratio
@@ -54,13 +54,13 @@ class GNN(torch.nn.Module):
             self.graph_pred_linear = torch.nn.Linear(self.emb_dim, self.num_tasks)
 
     def forward(self, batched_data):
-        h_node, Dirichlet_energy = self.gnn_node(batched_data)
+        h_node = self.gnn_node(batched_data)
         
 
         h_graph = self.pool(h_node, batched_data.batch)
 
-        return self.graph_pred_linear(h_graph), Dirichlet_energy
+        return self.graph_pred_linear(h_graph)
 
 
 if __name__ == '__main__':
-    GNN(num_tasks = 10)
+    Mol_GNN(num_tasks = 10)
