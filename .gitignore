@@ -34,3 +34,5 @@ dataset/
 __pycache__/
 
 test.py
+
+figures/

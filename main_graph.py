@@ -97,7 +97,7 @@ def eval(model, device, loader, evaluator,task_type, dataset):
 
 def main():
     # Training settings
-    parser = argparse.ArgumentParser(description='GNN baselines on ogbgmol* data with Pytorch Geometrics')
+    parser = argparse.ArgumentParser(description='Test the scaling behaviors of GNNs')
     parser.add_argument('--device', type=int, default=0,
                         help='which gpu to use if any (default: 0)')
     parser.add_argument('--lr', type=int, default=0.001,
@@ -112,7 +112,7 @@ def main():
                         help='dimensionality of hidden units in GNNs (default: 300)')
     parser.add_argument('--batch_size', type=int, default=256,
                         help='input batch size for training (default: 32)')
-    parser.add_argument('--epochs', type=int, default=1,
+    parser.add_argument('--epochs', type=int, default=20,
                         help='number of epochs to train (default: 100)')
     parser.add_argument('--num_workers', type=int, default=10,
                         help='number of workers (default: 0)')
@@ -121,8 +121,6 @@ def main():
     parser.add_argument('--training_ratio',type=float,default=0.01,
                         help="between 0 and 1")
     parser.add_argument('--random_seed',type=int,default=7)
-    parser.add_argument('--filename', type=str, default="",
-                        help='filename to output result (default: )')
     parser.add_argument('--scale_type', type=str, default="data",
                         help='data or model')
     args = parser.parse_args()
@@ -149,6 +147,7 @@ def main():
         evaluator = Evaluator(args.dataset)
     else:
         evaluator = PCQM4Mv2Evaluator()
+        evaluator.eval_metric ='mae'
 
     train_index = split_idx["train"]
     print('The total number of graphs:', len(train_index))
@@ -234,7 +233,8 @@ def main():
 
     #save the results for scaling curve drawing
     #save the results for scaling curve drawing
-    file_path ='./results/'+args.scale_type+'_'+args.dataset+'_'+args.gnn+'_'+dataset.task_type+'.npy'
+    file_path ='./results/'+args.scale_type+'_'+args.dataset+'_'+args.gnn+'_'+dataset.task_type+'_'+evaluator.eval_metric+'.npy'
+    file_path = file_path.replace(" ","")
     print(file_path)
     import os
     if os.path.exists(file_path):
