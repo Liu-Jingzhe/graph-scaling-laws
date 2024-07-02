@@ -42,4 +42,4 @@ Here `$name` is the target result file name. The command will generate a scaling
 
 ## Acknowledgement
 
-We thank [OGB]([snap-stanford/ogb: Benchmark datasets, data loaders, and evaluators for graph machine learning (github.com)](https://github.com/snap-stanford/ogb))  for their codes and datasets shared.
+We thank the authors of [OGB](https://github.com/snap-stanford/ogb) for their codes and datasets shared!
