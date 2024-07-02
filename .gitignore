@@ -36,3 +36,6 @@ __pycache__/
 test.py
 
 figures/
+
+link_origin/
+node_origin/

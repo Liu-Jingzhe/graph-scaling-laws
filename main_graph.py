@@ -232,7 +232,6 @@ def main():
     print('Best test loss: {}'.format(test_loss_curve[best_val_loss_epoch]))
 
     #save the results for scaling curve drawing
-    #save the results for scaling curve drawing
     file_path ='./results/'+args.scale_type+'_'+args.dataset+'_'+args.gnn+'_'+dataset.task_type+'_'+evaluator.eval_metric+'.npy'
     file_path = file_path.replace(" ","")
     print(file_path)
