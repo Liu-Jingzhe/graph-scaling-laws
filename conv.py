@@ -230,11 +230,7 @@ class GNN_node_Virtualnode(torch.nn.Module):
         elif self.JK == "sum":
             node_representation = 0
             for layer in range(self.num_layer + 1):
-                node_representation += h_list[layer]
-        
-        xi = torch.index_select(input=node_representation,  index=edge_index[0], dim=0)
-        xj = torch.index_select(input=node_representation,  index=edge_index[1], dim=0)
-        
+                node_representation += h_list[layer]      
 
         return node_representation
 

@@ -32,3 +32,5 @@ dataset/
 
 #complie
 __pycache__/
+
+test.py

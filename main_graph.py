@@ -98,7 +98,7 @@ def eval(model, device, loader, evaluator,task_type, dataset):
 def main():
     # Training settings
     parser = argparse.ArgumentParser(description='GNN baselines on ogbgmol* data with Pytorch Geometrics')
-    parser.add_argument('--device', type=int, default=1,
+    parser.add_argument('--device', type=int, default=0,
                         help='which gpu to use if any (default: 0)')
     parser.add_argument('--lr', type=int, default=0.001,
                         help='learning rate')
@@ -112,7 +112,7 @@ def main():
                         help='dimensionality of hidden units in GNNs (default: 300)')
     parser.add_argument('--batch_size', type=int, default=256,
                         help='input batch size for training (default: 32)')
-    parser.add_argument('--epochs', type=int, default=100,
+    parser.add_argument('--epochs', type=int, default=1,
                         help='number of epochs to train (default: 100)')
     parser.add_argument('--num_workers', type=int, default=10,
                         help='number of workers (default: 0)')
@@ -123,6 +123,8 @@ def main():
     parser.add_argument('--random_seed',type=int,default=7)
     parser.add_argument('--filename', type=str, default="",
                         help='filename to output result (default: )')
+    parser.add_argument('--scale_type', type=str, default="data",
+                        help='data or model')
     args = parser.parse_args()
     print(args)
     device = torch.device("cuda:" + str(args.device)) if torch.cuda.is_available() else torch.device("cpu")
@@ -149,8 +151,18 @@ def main():
         evaluator = PCQM4Mv2Evaluator()
 
     train_index = split_idx["train"]
-    print(len(train_index))
+    print('The total number of graphs:', len(train_index))
     train_loader = DataLoader(dataset[train_index[:int(args.training_ratio*len(train_index))]], batch_size=args.batch_size, shuffle=True, num_workers = args.num_workers)
+    
+    total_node_number = 0
+    total_edge_number = 0
+    train_set = dataset[train_index[:int(args.training_ratio*len(train_index))]]
+    for d in train_set:
+        total_node_number = total_node_number+int(d.x.shape[0])
+        total_edge_number = total_edge_number+int(d.edge_index.shape[1])
+    print('the total node number in the training set:', total_node_number)
+    print('the total edge number in the training set:', total_edge_number)
+
     valid_loader = DataLoader(dataset[split_idx["valid"]], batch_size=args.batch_size, shuffle=False, num_workers = args.num_workers)
     if args.dataset == "pcqv2":
         test_loader = DataLoader(dataset[split_idx["valid"]], batch_size=args.batch_size, shuffle=False, num_workers = args.num_workers)
@@ -219,6 +231,29 @@ def main():
     print('Test score: {}'.format(test_curve[best_val_epoch]))
     print('Best val loss: {}'.format(val_loss_curve[best_val_loss_epoch]))
     print('Best test loss: {}'.format(test_loss_curve[best_val_loss_epoch]))
+
+    #save the results for scaling curve drawing
+    #save the results for scaling curve drawing
+    file_path ='./results/'+args.scale_type+'_'+args.dataset+'_'+args.gnn+'_'+dataset.task_type+'.npy'
+    print(file_path)
+    import os
+    if os.path.exists(file_path):
+        print('The file exits')
+        n_array = np.load(file_path)
+        n_array = n_array.tolist()
+    else:
+        print('we create the new result file')
+        n_array = [[],[]]
+    if args.scale_type == 'model':
+        n_array[0].append(num_params)
+    else:
+        n_array[0].append(total_node_number)
+
+    n_array[1].append(test_curve[best_val_epoch])
+    n_array = np.array(n_array)
+    np.save(file=file_path,arr=n_array)
+    print('Results Saved!')
+        
 
 
 if __name__ == "__main__":
